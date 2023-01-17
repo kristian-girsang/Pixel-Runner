@@ -8,12 +8,13 @@ def display_score():
     screen.blit(score_surf,score_rect)
     print(current_time)
 
+
 pygame.init()                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 screen = pygame.display.set_mode((800, 400))
 pygame.display.set_caption('Runner Game')
 clock = pygame.time.Clock()
 test_font = pygame.font.Font('font/Pixeltype.ttf', 50)
-game_active = True
+game_active = False
 start_time = 0
 
 sky_surface = pygame.image.load('graphics/Sky.png').convert()
@@ -28,6 +29,10 @@ snail_rect = snail_surf.get_rect(midbottom = (850, 300))
 player_surf = pygame.image.load('graphics/player/player_walk_1.png').convert_alpha()
 player_rect = player_surf.get_rect(midbottom = (80,300))
 player_gravity = 0
+
+# Intro screen
+player_stand = pygame.image.load('graphics/Player/player_stand.png').convert_alpha()
+player_stand_rect = player_stand.get_rect(center = (400,200))
 
 while True:
     for event in pygame.event.get():
@@ -71,7 +76,8 @@ while True:
         if snail_rect.colliderect(player_rect):
             game_active = False
     else:
-        screen.fill('Yellow')
+        screen.fill((94,129,162))
+        screen.blit(player_stand, player_stand_rect)
         
     pygame.display.update()
     clock.tick(60)
