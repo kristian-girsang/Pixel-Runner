@@ -2,6 +2,7 @@ import pygame
 from sys import exit
 from random import randint
 
+# display score
 def display_score():
     current_time = int(pygame.time.get_ticks() / 100) - start_time
     score_surf = test_font.render(f'Score: {current_time}', False, (64, 64, 64))
@@ -23,21 +24,41 @@ def obstacle_movement(obstacle_list):
         return obstacle_list
     else: return []
 
+# make collision when player hit the obstacles
 def collisions(player, obstacles):
     if obstacles:
         for obstacle_rect in obstacles:
             if player.colliderect(obstacle_rect): return False
     return True
 
-pygame.init()                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+# animate the player
+def player_animation():
+    global player_surf, player_index
+
+    if player_rect.bottom < 300:
+        # display the jump  surface when player is not on floor
+        player_surf = player_jump
+    else:
+        # play walking animation if the player is on floor
+        player_index += 0.1
+        if player_index >= len(player_walk): player_index = 0
+        player_surf = player_walk[int(player_index)]
+
+# initialize pygame
+pygame.init()      
+# screen size                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 screen = pygame.display.set_mode((800, 400))
 pygame.display.set_caption('Pixel Runner')
+# create an object to help track time
 clock = pygame.time.Clock()
+# game font
 test_font = pygame.font.Font('font/Pixeltype.ttf', 50)
+# initiate the game active or no
 game_active = False
 start_time = 0
 score = 0
 
+# create the surface of sky and ground
 sky_surface = pygame.image.load('graphics/Sky.png').convert()
 ground_surface = pygame.image.load('graphics/ground.png').convert()
 
@@ -47,10 +68,17 @@ ground_surface = pygame.image.load('graphics/ground.png').convert()
 # Obstacles
 snail_surf = pygame.image.load('graphics/snail/snail1.png').convert_alpha()
 fly_surf = pygame.image.load('graphics/fly/fly1.png').convert_alpha()
-
 obstacle_rect_list = []
 
-player_surf = pygame.image.load('graphics/player/player_walk_1.png').convert_alpha()
+# import all player pictures to make the player animation with pictures
+player_walk_1 = pygame.image.load('graphics/player/player_walk_1.png').convert_alpha()
+player_walk_2 = pygame.image.load('graphics/player/player_walk_2.png').convert_alpha()
+# make player_walk into index
+player_walk = [player_walk_1, player_walk_2]
+player_index = 0
+player_jump = pygame.image.load('graphics/player/jump.png').convert_alpha()
+
+player_surf = player_walk[player_index]
 player_rect = player_surf.get_rect(midbottom = (80,300))
 player_gravity = 0
 
@@ -105,17 +133,17 @@ while True:
         # if snail_rect.right <= 0: snail_rect.left = 800
         # screen.blit(snail_surf, snail_rect)
 
-        # player
+        # player movement
         player_gravity += 1
         player_rect.y += player_gravity
-        if player_rect.bottom >= 300:
-            player_rect.bottom = 300
+        if player_rect.bottom >= 300: player_rect.bottom = 300
+        player_animation()
         screen.blit(player_surf,player_rect)
 
         # Obstacle movement
         obstacle_rect_list = obstacle_movement(obstacle_rect_list)
 
-        # collision
+        # collision method
         game_active = collisions(player_rect,obstacle_rect_list)
         
     else:
